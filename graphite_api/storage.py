@@ -12,14 +12,14 @@ class Store(object):
     def __init__(self, finders=None):
         self.finders = finders
 
-    def find(self, pattern, startTime=None, endTime=None, local=True):
+    def find(self, pattern, tenant, startTime=None, endTime=None, local=True):
         query = FindQuery(pattern, startTime, endTime)
 
         matching_nodes = set()
 
         # Search locally
         for finder in self.finders:
-            for node in finder.find_nodes(query):
+            for node in finder.find_nodes(query, tenant):
                 matching_nodes.add(node)
 
         # Group matching nodes by their path

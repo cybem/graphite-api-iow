@@ -85,9 +85,10 @@ def fetchData(requestContext, pathExpr):
     seriesList = []
     startTime = int(epoch(requestContext['startTime']))
     endTime = int(epoch(requestContext['endTime']))
+    tenant = str(requestContext['tenant'])
 
-    def _fetchData(pathExpr, startTime, endTime, requestContext, seriesList):
-        matching_nodes = app.store.find(pathExpr, startTime, endTime)
+    def _fetchData(pathExpr, tenant, startTime, endTime, requestContext, seriesList):
+        matching_nodes = app.store.find(pathExpr, tenant, startTime, endTime)
 
         # Group nodes that support multiple fetches
         multi_nodes = defaultdict(list)
@@ -109,7 +110,7 @@ def fetchData(requestContext, pathExpr):
             nodes = multi_nodes[finder.__fetch_multi__]
             if not nodes:
                 continue
-            time_info, series = finder.fetch_multi(nodes, startTime, endTime)
+            time_info, series = finder.fetch_multi(nodes, tenant, startTime, endTime)
             start, end, step = time_info
             for path, values in series.items():
                 series = TimeSeries(path, start, end, step, values)
@@ -155,7 +156,7 @@ def fetchData(requestContext, pathExpr):
 
         return seriesList
 
-    return _fetchData(pathExpr, startTime, endTime, requestContext, seriesList)
+    return _fetchData(pathExpr, tenant, startTime, endTime, requestContext, seriesList)
 
 
 def nonempty(series):

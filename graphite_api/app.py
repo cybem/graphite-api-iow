@@ -95,10 +95,13 @@ def metrics_search():
         errors['max_results'] = 'must be an integer.'
     if 'query' not in RequestParams:
         errors['query'] = 'this parameter is required.'
+    if 'tenant' not in RequestParams:
+	errors['tenant'] = 'this parameter is required.'
     if errors:
         return jsonify({'errors': errors}, status=400)
     results = sorted(app.searcher.search(
         query=RequestParams['query'],
+	tenant=RequestParams['tenant'],
         max_results=max_results,
     ), key=lambda result: result['path'] or '')
     return jsonify({'metrics': results})
@@ -132,11 +135,13 @@ def metrics_find():
 
     if 'query' not in RequestParams:
         errors['query'] = 'this parameter is required.'
-
+    if 'tenant' not in RequestParams:
+        errors['tenant'] = 'this parameter is required.'
     if errors:
         return jsonify({'errors': errors}, status=400)
 
     query = RequestParams['query']
+    tenant = RequestParams['tenant']
     matches = sorted(
         app.store.find(query, from_time, until_time),
         key=lambda node: node.name
@@ -281,6 +286,7 @@ def render():
     if not len(targets):
         errors['target'] = 'This parameter is required.'
     request_options['targets'] = targets
+    request_options['tenant'] = RequestParams['tenant']
 
     if 'rawData' in RequestParams:
         request_options['format'] = 'raw'
@@ -358,6 +364,7 @@ def render():
         'startTime': request_options['startTime'],
         'endTime': request_options['endTime'],
         'data': [],
+	'tenant': request_options['tenant'],
     }
 
     if request_options['graphType'] == 'pie':

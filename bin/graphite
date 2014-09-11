@@ -12,5 +12,5 @@ from graphite_api.app import app
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8888))
-    host = os.environ.get('BIND_ADDRESS', '127.0.0.1')
+    host = os.environ.get('BIND_ADDRESS', '0.0.0.0')
     app.run(debug=graphite_api.DEBUG, port=port, host=host)

@@ -283,8 +283,8 @@ def render():
                 graph_type, "', '".join(sorted(GraphTypes.keys()))))
     request_options['pieMode'] = RequestParams.get('pieMode', 'average')
     targets = RequestParams.getlist('target')
-    if not len(targets):
-        errors['target'] = 'This parameter is required.'
+    #if not len(targets):
+    #    errors['target'] = 'This parameter is required.'
     request_options['targets'] = targets
     request_options['tenant'] = RequestParams['tenant']
 

@@ -2006,9 +2006,11 @@ def _fetchWithBootstrap(requestContext, seriesList, **delta_kwargs):
     """
     from .app import evaluateTarget
     bootstrapContext = requestContext.copy()
-    bootstrapContext['startTime'] = (
-        requestContext['startTime'] - timedelta(**delta_kwargs))
-    bootstrapContext['endTime'] = requestContext['startTime']
+    startTime = (requestContext['startTime'] - timedelta(**delta_kwargs))
+    endTime = requestContext['startTime']
+    period = int(epoch(endTime)) - (int(epoch(startTime)))
+    bootstrapContext['startTime'] = startTime
+    bootstrapContext['endTime'] = endTime
 
     bootstrapList = []
     for series in seriesList:
@@ -2017,6 +2019,10 @@ def _fetchWithBootstrap(requestContext, seriesList, **delta_kwargs):
             # fetched it
             continue
         bootstraps = evaluateTarget(bootstrapContext, series.pathExpression)
+        if not bootstraps:
+            num = period / series.step
+            bootstraps = [TimeSeries(series.name, startTime, endTime,
+                                     series.step, [None] * num)]
         bootstrapList.extend(bootstraps)
 
     newSeriesList = []
